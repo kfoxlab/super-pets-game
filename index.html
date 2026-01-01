@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦸 SUPER PETS 🦸</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Lucide React icons as inline SVG components
+        const Heart = ({ className }) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+        );
+
+        const Sparkles = ({ className }) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+                <path d="M5 3v4"></path>
+                <path d="M19 17v4"></path>
+                <path d="M3 5h4"></path>
+                <path d="M17 19h4"></path>
+            </svg>
+        );
+
+        const Cookie = ({ className }) => (
+            <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                <path d="M8.5 8.5v.01"></path>
+                <path d="M16 15.5v.01"></path>
+                <path d="M12 12v.01"></path>
+                <path d="M11 17v.01"></path>
+                <path d="M7 14v.01"></path>
+            </svg>
+        );
+
+        const PETS = [
+            { id: 1, emoji: '🐶', name: 'Puppy', color: 'from-amber-400 to-orange-500' },
+            { id: 2, emoji: '🐱', name: 'Kitty', color: 'from-pink-400 to-rose-500' },
+            { id: 3, emoji: '🐰', name: 'Bunny', color: 'from-purple-400 to-pink-500' },
+            { id: 4, emoji: '🐼', name: 'Panda', color: 'from-slate-400 to-gray-600' },
+            { id: 5, emoji: '🦊', name: 'Fox', color: 'from-orange-400 to-red-500' },
+            { id: 6, emoji: '🐸', name: 'Frog', color: 'from-green-400 to-emerald-500' },
+            { id: 7, emoji: '🐻', name: 'Bear', color: 'from-amber-600 to-yellow-700' },
+            { id: 8, emoji: '🐨', name: 'Koala', color: 'from-gray-400 to-slate-500' },
+            { id: 9, emoji: '🦁', name: 'Lion', color: 'from-yellow-500 to-orange-600' },
+            { id: 10, emoji: '🐯', name: 'Tiger', color: 'from-orange-500 to-red-600' },
+            { id: 11, emoji: '🐵', name: 'Monkey', color: 'from-amber-500 to-orange-600' },
+            { id: 12, emoji: '🦄', name: 'Unicorn', color: 'from-pink-300 to-purple-400' },
+            { id: 13, emoji: '🐉', name: 'Dragon', color: 'from-green-500 to-teal-600' },
+            { id: 14, emoji: '🦖', name: 'Dino', color: 'from-lime-500 to-green-600' },
+            { id: 15, emoji: '🐙', name: 'Octopus', color: 'from-purple-500 to-pink-600' }
+        ];
+
+        const TOYS = [
+            { id: 1, emoji: '⚽', name: 'Ball', color: 'from-blue-400 to-cyan-500' },
+            { id: 2, emoji: '🎾', name: 'Tennis', color: 'from-yellow-400 to-green-500' },
+            { id: 3, emoji: '🧸', name: 'Teddy', color: 'from-pink-400 to-rose-500' },
+            { id: 4, emoji: '🪀', name: 'Yoyo', color: 'from-purple-400 to-indigo-500' }
+        ];
+
+        const HUMANS = [
+            { id: 1, emoji: '👧', name: 'Girl', color: 'from-pink-300 to-rose-400' },
+            { id: 2, emoji: '👦', name: 'Boy', color: 'from-blue-300 to-cyan-400' },
+            { id: 3, emoji: '👨', name: 'Man', color: 'from-indigo-300 to-blue-400' },
+            { id: 4, emoji: '👩', name: 'Woman', color: 'from-purple-300 to-pink-400' },
+            { id: 5, emoji: '🧑‍🚀', name: 'Astronaut', color: 'from-slate-300 to-gray-400' },
+            { id: 6, emoji: '🧙', name: 'Wizard', color: 'from-violet-400 to-purple-500' },
+            { id: 7, emoji: '🧚', name: 'Fairy', color: 'from-pink-400 to-fuchsia-500' },
+            { id: 8, emoji: '🦸', name: 'Hero', color: 'from-red-400 to-orange-500' }
+        ];
+
+        const BACKGROUNDS = [
+            { id: 1, name: 'Garden', gradient: 'from-green-300 via-emerald-200 to-lime-300', emojis: ['🌸', '🌼', '🌻', '🦋'] },
+            { id: 2, name: 'Beach', gradient: 'from-sky-300 via-blue-200 to-cyan-300', emojis: ['🏖️', '🌊', '⛱️', '🐚'] },
+            { id: 3, name: 'Space', gradient: 'from-indigo-900 via-purple-900 to-blue-900', emojis: ['⭐', '🌟', '✨', '🚀'] },
+            { id: 4, name: 'Rainbow', gradient: 'from-pink-300 via-yellow-200 to-purple-300', emojis: ['🌈', '☁️', '🎨', '🎪'] },
+            { id: 5, name: 'Forest', gradient: 'from-green-400 via-teal-300 to-emerald-400', emojis: ['🌲', '🍄', '🦌', '🌿'] }
+        ];
+
+        function SuperPets() {
+            const [selectedPet, setSelectedPet] = useState(null);
+            const [happiness, setHappiness] = useState(70);
+            const [hunger, setHunger] = useState(50);
+            const [energy, setEnergy] = useState(60);
+            const [isDancing, setIsDancing] = useState(false);
+            const [isEating, setIsEating] = useState(false);
+            const [isSleeping, setIsSleeping] = useState(false);
+            const [hearts, setHearts] = useState([]);
+            const [sparkles, setSparkles] = useState([]);
+            const [currentToy, setCurrentToy] = useState(null);
+            const [isPlayingWithToy, setIsPlayingWithToy] = useState(false);
+            const [background, setBackground] = useState(BACKGROUNDS[1]);
+            const [humans, setHumans] = useState([]);
+            const [draggedHuman, setDraggedHuman] = useState(null);
+            const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+            const [currentGame, setCurrentGame] = useState(null);
+            const [score, setScore] = useState(0);
+            const [catchItems, setCatchItems] = useState([]);
+            const [memoryCards, setMemoryCards] = useState([]);
+            const [flippedCards, setFlippedCards] = useState([]);
+            const [matchedCards, setMatchedCards] = useState([]);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setHunger(prev => Math.min(100, prev + 0.5));
+                    setEnergy(prev => Math.max(0, prev - 0.3));
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const feedPet = (foodType) => {
+                setIsEating(true);
+                if (foodType === 'cookie') {
+                    setHunger(Math.max(0, hunger - 30));
+                    setHappiness(Math.min(100, happiness + 10));
+                } else if (foodType === 'candy') {
+                    setHunger(Math.max(0, hunger - 20));
+                    setHappiness(Math.min(100, happiness + 20));
+                    setEnergy(Math.min(100, energy + 15));
+                }
+                setTimeout(() => setIsEating(false), 1500);
+            };
+
+            const playWithPet = () => {
+                if (energy < 20) {
+                    alert('Your pet is too tired! Let them sleep first! 💤');
+                    return;
+                }
+                setIsDancing(true);
+                setHappiness(Math.min(100, happiness + 20));
+                setEnergy(Math.max(0, energy - 15));
+                
+                const newHearts = Array.from({ length: 5 }, (_, i) => ({
+                    id: Date.now() + i,
+                    x: Math.random() * 200 - 100,
+                    delay: i * 0.2
+                }));
+                setHearts(newHearts);
+                
+                setTimeout(() => {
+                    setIsDancing(false);
+                    setHearts([]);
+                }, 2000);
+            };
+
+            const playWithToy = (toy) => {
+                if (energy < 15) {
+                    alert('Your pet is too tired! Let them sleep first! 💤');
+                    return;
+                }
+                setCurrentToy(toy);
+                setIsPlayingWithToy(true);
+                setHappiness(Math.min(100, happiness + 15));
+                setEnergy(Math.max(0, energy - 10));
+                
+                const newSparkles = Array.from({ length: 10 }, (_, i) => ({
+                    id: Date.now() + i,
+                    x: Math.random() * 200 - 100,
+                    y: Math.random() * 200 - 100
+                }));
+                setSparkles(newSparkles);
+                
+                setTimeout(() => {
+                    setIsPlayingWithToy(false);
+                    setCurrentToy(null);
+                    setSparkles([]);
+                }, 2500);
+            };
+
+            const putToSleep = () => {
+                setIsSleeping(true);
+                const interval = setInterval(() => {
+                    setEnergy(prev => {
+                        if (prev >= 100) {
+                            clearInterval(interval);
+                            setIsSleeping(false);
+                            return 100;
+                        }
+                        return prev + 5;
+                    });
+                }, 200);
+            };
+
+            const petCharacter = () => {
+                const newSparkles = Array.from({ length: 8 }, (_, i) => ({
+                    id: Date.now() + i,
+                    x: Math.random() * 150 - 75,
+                    y: Math.random() * 150 - 75
+                }));
+                setSparkles(newSparkles);
+                setHappiness(Math.min(100, happiness + 5));
+                setTimeout(() => setSparkles([]), 1000);
+            };
+
+            const addHuman = (human) => {
+                const newHuman = {
+                    ...human,
+                    instanceId: Date.now(),
+                    position: { x: 150, y: 100 }
+                };
+                setHumans(prev => [...prev, newHuman]);
+                setHappiness(Math.min(100, happiness + 10));
+            };
+
+            const handleMouseDown = (e, human) => {
+                const rect = e.target.getBoundingClientRect();
+                setDragOffset({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                });
+                setDraggedHuman(human);
+            };
+
+            const handleMouseMove = (e) => {
+                if (draggedHuman) {
+                    const gameArea = document.getElementById('game-area');
+                    if (gameArea) {
+                        const rect = gameArea.getBoundingClientRect();
+                        const x = e.clientX - rect.left - dragOffset.x;
+                        const y = e.clientY - rect.top - dragOffset.y;
+                        
+                        setHumans(prev => prev.map(h => 
+                            h.instanceId === draggedHuman.instanceId 
+                                ? { ...h, position: { x, y } }
+                                : h
+                        ));
+                    }
+                }
+            };
+
+            const handleMouseUp = () => {
+                setDraggedHuman(null);
+            };
+
+            const removeHuman = (instanceId) => {
+                setHumans(prev => prev.filter(h => h.instanceId !== instanceId));
+            };
+
+            const startCatchGame = () => {
+                setCurrentGame('catch');
+                setScore(0);
+                setCatchItems([]);
+                
+                const interval = setInterval(() => {
+                    setCatchItems(prev => {
+                        const newItems = prev.map(item => ({
+                            ...item,
+                            y: item.y + 5
+                        })).filter(item => item.y < 300);
+                        
+                        if (Math.random() > 0.7) {
+                            newItems.push({
+                                id: Date.now(),
+                                x: Math.random() * 300,
+                                y: 0,
+                                emoji: ['🍎', '🍌', '🍓', '🍇', '🥕'][Math.floor(Math.random() * 5)]
+                            });
+                        }
+                        
+                        return newItems;
+                    });
+                }, 500);
+                
+                setTimeout(() => {
+                    clearInterval(interval);
+                    setCurrentGame(null);
+                    setCatchItems([]);
+                    setHappiness(Math.min(100, happiness + Math.min(score * 2, 30)));
+                }, 15000);
+            };
+
+            const catchItem = (itemId) => {
+                setCatchItems(prev => prev.filter(item => item.id !== itemId));
+                setScore(prev => prev + 1);
+            };
+
+            const startMemoryGame = () => {
+                setCurrentGame('memory');
+                setScore(0);
+                const emojis = ['🌟', '🎈', '🎁', '🎨', '🎪', '🎭'];
+                const doubled = [...emojis, ...emojis];
+                const shuffled = doubled.sort(() => Math.random() - 0.5).map((emoji, i) => ({
+                    id: i,
+                    emoji,
+                    matched: false
+                }));
+                setMemoryCards(shuffled);
+                setFlippedCards([]);
+                setMatchedCards([]);
+            };
+
+            const flipCard = (cardId) => {
+                if (flippedCards.length === 2 || flippedCards.includes(cardId) || matchedCards.includes(cardId)) return;
+                
+                const newFlipped = [...flippedCards, cardId];
+                setFlippedCards(newFlipped);
+                
+                if (newFlipped.length === 2) {
+                    const card1 = memoryCards.find(c => c.id === newFlipped[0]);
+                    const card2 = memoryCards.find(c => c.id === newFlipped[1]);
+                    
+                    if (card1.emoji === card2.emoji) {
+                        setMatchedCards(prev => [...prev, ...newFlipped]);
+                        setScore(prev => prev + 10);
+                        setFlippedCards([]);
+                        
+                        if (matchedCards.length + 2 === memoryCards.length) {
+                            setTimeout(() => {
+                                setCurrentGame(null);
+                                setHappiness(Math.min(100, happiness + 25));
+                            }, 1000);
+                        }
+                    } else {
+                        setTimeout(() => setFlippedCards([]), 1000);
+                    }
+                }
+            };
+
+            const getEmoji = () => {
+                if (!selectedPet) return '❓';
+                return selectedPet.emoji;
+            };
+
+            const getExpression = () => {
+                if (isSleeping) return '💤';
+                if (isEating) return '😋';
+                if (isDancing) return '✨';
+                if (happiness > 80) return '💖';
+                if (happiness > 50) return '😊';
+                if (hunger > 70) return '😢';
+                return '💭';
+            };
+
+            const getPetColor = () => {
+                if (!selectedPet) return 'from-gray-400 to-gray-500';
+                if (isSleeping) return 'from-indigo-400 to-purple-500';
+                if (isEating) return selectedPet.color;
+                if (isDancing) return 'from-yellow-400 to-pink-500';
+                return selectedPet.color;
+            };
+
+            return (
+                <div className={`min-h-screen transition-all duration-1000 bg-gradient-to-br ${background.gradient} flex items-center justify-center p-4 relative overflow-hidden`}>
+                    <style>{`
+                        @keyframes wobble {
+                            0%, 100% { transform: rotate(-3deg); }
+                            50% { transform: rotate(3deg); }
+                        }
+                        @keyframes wiggle {
+                            0%, 100% { transform: translateX(0); }
+                            25% { transform: translateX(-10px) rotate(-5deg); }
+                            75% { transform: translateX(10px) rotate(5deg); }
+                        }
+                        @keyframes float {
+                            0%, 100% { transform: translateY(0px); }
+                            50% { transform: translateY(-20px); }
+                        }
+                        @keyframes capeFlow {
+                            0% { transform: translateX(0) rotate(-15deg) scaleY(1); }
+                            25% { transform: translateX(-5px) rotate(-12deg) scaleY(1.05); }
+                            50% { transform: translateX(-8px) rotate(-18deg) scaleY(0.95); }
+                            75% { transform: translateX(-3px) rotate(-14deg) scaleY(1.02); }
+                            100% { transform: translateX(0) rotate(-15deg) scaleY(1); }
+                        }
+                        .wobble { animation: wobble 2s ease-in-out infinite; }
+                        .wiggle { animation: wiggle 1s ease-in-out infinite; }
+                        .float { animation: float 3s ease-in-out infinite; }
+                        .cape-flow { animation: capeFlow 2s ease-in-out infinite; }
+                        .cartoon-button { transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+                        .cartoon-button:hover { transform: scale(1.15) rotate(5deg); }
+                        .cartoon-button:active { transform: scale(0.9) rotate(-5deg); }
+                    `}</style>
+
+                    {/* Background decorations */}
+                    {background.emojis.map((emoji, i) => (
+                        <div
+                            key={i}
+                            className="absolute text-5xl opacity-30 float"
+                            style={{
+                                top: `${(i * 25) % 100}%`,
+                                left: `${(i * 30) % 100}%`,
+                                animationDelay: `${i * 0.7}s`,
+                                animationDuration: `${3 + i % 3}s`
+                            }}
+                        >
+                            {emoji}
+                        </div>
+                    ))}
+                    
+                    <div className="max-w-2xl w-full relative z-10">
+                        {/* Title */}
+                        <h1 className="text-6xl font-black text-center mb-8 text-white drop-shadow-2xl wobble" style={{
+                            textShadow: '4px 4px 0px rgba(0,0,0,0.2), 8px 8px 0px rgba(0,0,0,0.1)',
+                            WebkitTextStroke: '3px rgba(255,255,255,0.5)'
+                        }}>
+                            🦸 SUPER PETS 🦸
+                        </h1>
+
+                        {/* Pet Selection Screen */}
+                        {!selectedPet ? (
+                            <div className="bg-white rounded-3xl shadow-2xl p-8 border-8 border-purple-300" style={{
+                                boxShadow: '0 10px 0 rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.2)'
+                            }}>
+                                <h2 className="text-4xl font-black text-center mb-8 text-purple-600 wiggle" style={{
+                                    textShadow: '3px 3px 0px rgba(147, 51, 234, 0.3)'
+                                }}>
+                                    Choose Your Super Pet! 🎉
+                                </h2>
+                                <div className="grid grid-cols-5 gap-4 max-h-96 overflow-y-auto p-2">
+                                    {PETS.map(pet => (
+                                        <button
+                                            key={pet.id}
+                                            onClick={() => setSelectedPet(pet)}
+                                            className={`cartoon-button bg-gradient-to-br ${pet.color} rounded-2xl p-6 shadow-lg border-4 border-white`}
+                                            style={{
+                                                boxShadow: '0 6px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15)'
+                                            }}
+                                        >
+                                            <div className="text-5xl mb-2">{pet.emoji}</div>
+                                            <div className="text-white font-black text-sm drop-shadow-md">{pet.name}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            /* Main Game Area */
+                            <div 
+                                id="game-area"
+                                className="bg-white rounded-3xl shadow-2xl p-8 relative overflow-hidden border-8 border-purple-300"
+                                style={{
+                                    boxShadow: '0 10px 0 rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.2)'
+                                }}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                            >
+                                {/* Back button */}
+                                <button
+                                    onClick={() => setSelectedPet(null)}
+                                    className="absolute top-4 left-4 bg-purple-500 text-white font-black px-6 py-3 rounded-2xl border-4 border-purple-700 cartoon-button z-10"
+                                    style={{
+                                        boxShadow: '0 4px 0 rgba(107, 33, 168, 1), 0 6px 15px rgba(0,0,0,0.2)'
+                                    }}
+                                >
+                                    ← Change Pet
+                                </button>
+
+                                {/* Background selector */}
+                                <div className="absolute top-4 right-4 flex gap-2 z-10">
+                                    {BACKGROUNDS.map(bg => (
+                                        <button
+                                            key={bg.id}
+                                            onClick={() => setBackground(bg)}
+                                            className={`cartoon-button w-12 h-12 rounded-full bg-gradient-to-br ${bg.gradient} border-4 border-white ${
+                                                background.id === bg.id ? 'ring-4 ring-yellow-400' : ''
+                                            }`}
+                                            style={{
+                                                boxShadow: '0 4px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.15)'
+                                            }}
+                                            title={bg.name}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Stats */}
+                                <div className="grid grid-cols-3 gap-4 mb-8 mt-16">
+                                    <div className="bg-gradient-to-br from-red-400 to-pink-500 rounded-2xl p-4 text-white border-4 border-red-600 float" style={{
+                                        boxShadow: '0 6px 0 rgba(220, 38, 38, 1), 0 8px 20px rgba(0,0,0,0.2)',
+                                        animationDelay: '0s'
+                                    }}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Heart className="w-6 h-6" />
+                                            <span className="font-black text-lg">Happy</span>
+                                        </div>
+                                        <div className="bg-white/40 rounded-full h-5 overflow-hidden border-2 border-white">
+                                            <div 
+                                                className="bg-white h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${happiness}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-orange-400 to-yellow-500 rounded-2xl p-4 text-white border-4 border-orange-600 float" style={{
+                                        boxShadow: '0 6px 0 rgba(234, 88, 12, 1), 0 8px 20px rgba(0,0,0,0.2)',
+                                        animationDelay: '0.3s'
+                                    }}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Cookie className="w-6 h-6" />
+                                            <span className="font-black text-lg">Hungry</span>
+                                        </div>
+                                        <div className="bg-white/40 rounded-full h-5 overflow-hidden border-2 border-white">
+                                            <div 
+                                                className="bg-white h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${hunger}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-2xl p-4 text-white border-4 border-blue-600 float" style={{
+                                        boxShadow: '0 6px 0 rgba(37, 99, 235, 1), 0 8px 20px rgba(0,0,0,0.2)',
+                                        animationDelay: '0.6s'
+                                    }}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Sparkles className="w-6 h-6" />
+                                            <span className="font-black text-lg">Energy</span>
+                                        </div>
+                                        <div className="bg-white/40 rounded-full h-5 overflow-hidden border-2 border-white">
+                                            <div 
+                                                className="bg-white h-full rounded-full transition-all duration-500"
+                                                style={{ width: `${energy}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pet Character Area */}
+                                <div className="relative flex justify-center items-center my-12 h-64">
+                                    {/* Floating hearts */}
+                                    {hearts.map(heart => (
+                                        <div
+                                            key={heart.id}
+                                            className="absolute animate-ping"
+                                            style={{
+                                                left: `calc(50% + ${heart.x}px)`,
+                                                animationDelay: `${heart.delay}s`,
+                                                animationDuration: '1s'
+                                            }}
+                                        >
+                                            <Heart className="w-8 h-8 text-red-500 fill-red-500" />
+                                        </div>
+                                    ))}
+
+                                    {/* Sparkles */}
+                                    {sparkles.map(sparkle => (
+                                        <div
+                                            key={sparkle.id}
+                                            className="absolute animate-ping"
+                                            style={{
+                                                left: `calc(50% + ${sparkle.x}px)`,
+                                                top: `calc(50% + ${sparkle.y}px)`,
+                                                animationDuration: '0.5s'
+                                            }}
+                                        >
+                                            <Sparkles className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                                        </div>
+                                    ))}
+
+                                    {/* Toy being played with - in front! */}
+                                    {currentToy && (
+                                        <div className="absolute animate-bounce z-30" style={{ top: '10%', right: '15%' }}>
+                                            <div className="text-8xl" style={{
+                                                filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.4))'
+                                            }}>{currentToy.emoji}</div>
+                                        </div>
+                                    )}
+
+                                    {/* Draggable Humans */}
+                                    {humans.map(human => (
+                                        <div
+                                            key={human.instanceId}
+                                            className="absolute cursor-move select-none cartoon-button"
+                                            style={{
+                                                left: `${human.position.x}px`,
+                                                top: `${human.position.y}px`,
+                                                zIndex: draggedHuman?.instanceId === human.instanceId ? 50 : 10
+                                            }}
+                                            onMouseDown={(e) => handleMouseDown(e, human)}
+                                            onDoubleClick={() => removeHuman(human.instanceId)}
+                                        >
+                                            <div className={`bg-gradient-to-br ${human.color} rounded-full p-4 border-4 border-white`}
+                                                style={{
+                                                    boxShadow: '0 6px 0 rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15)'
+                                                }}
+                                            >
+                                                <div className="text-5xl">{human.emoji}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {/* Pet */}
+                                    <div
+                                        onClick={petCharacter}
+                                        className={`cursor-pointer transition-all duration-500 ${
+                                            isDancing ? 'wiggle' : 'float'
+                                        } ${isSleeping ? 'opacity-70' : ''}`}
+                                    >
+                                        <div className={`bg-gradient-to-br ${getPetColor()} w-56 h-56 rounded-full shadow-2xl flex items-center justify-center cartoon-button relative border-8 border-white`}
+                                            style={{
+                                                boxShadow: '0 10px 0 rgba(0,0,0,0.15), 0 15px 30px rgba(0,0,0,0.3)'
+                                            }}
+                                        >
+                                            {/* Pet emoji */}
+                                            <div className="text-9xl relative z-10">
+                                                {getEmoji()}
+                                            </div>
+                                            
+                                            {/* Expression bubble */}
+                                            <div className="absolute -top-6 -right-6 text-5xl bg-white rounded-full p-3 shadow-lg border-4 border-yellow-300 z-20"
+                                                style={{
+                                                    boxShadow: '0 4px 0 rgba(0,0,0,0.1), 0 6px 15px rgba(0,0,0,0.2)'
+                                                }}
+                                            >
+                                                {getExpression()}
+                                            </div>
+                                            
+                                            {/* Superhero symbol/badge on the pet's chest */}
+                                            <div className="absolute bottom-8 text-4xl z-20 animate-pulse">⚡</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="grid grid-cols-2 gap-4 mt-8 mb-4">
+                                    <button
+                                        onClick={() => feedPet('cookie')}
+                                        disabled={isEating || isSleeping}
+                                        className="cartoon-button bg-gradient-to-br from-orange-400 to-amber-500 text-white font-black text-xl py-7 rounded-2xl border-4 border-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{
+                                            boxShadow: '0 6px 0 rgba(217, 119, 6, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                        }}
+                                    >
+                                        🍪 Power Cookie
+                                    </button>
+
+                                    <button
+                                        onClick={() => feedPet('candy')}
+                                        disabled={isEating || isSleeping}
+                                        className="cartoon-button bg-gradient-to-br from-pink-400 to-rose-500 text-white font-black text-xl py-7 rounded-2xl border-4 border-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{
+                                            boxShadow: '0 6px 0 rgba(225, 29, 72, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                        }}
+                                    >
+                                        🍬 Super Candy
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={playWithPet}
+                                        disabled={isDancing || isSleeping || energy < 20}
+                                        className="cartoon-button bg-gradient-to-br from-yellow-400 to-red-500 text-white font-black text-xl py-7 rounded-2xl border-4 border-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{
+                                            boxShadow: '0 6px 0 rgba(202, 138, 4, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                        }}
+                                    >
+                                        🎵 Hero Dance
+                                    </button>
+
+                                    <button
+                                        onClick={putToSleep}
+                                        disabled={isSleeping || energy > 80}
+                                        className="cartoon-button bg-gradient-to-br from-indigo-400 to-purple-500 text-white font-black text-xl py-7 rounded-2xl border-4 border-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{
+                                            boxShadow: '0 6px 0 rgba(79, 70, 229, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                        }}
+                                    >
+                                        💤 Hero Rest
+                                    </button>
+                                </div>
+
+                                {/* Toys Section */}
+                                <div className="mt-6">
+                                    <h3 className="text-2xl font-black text-center mb-4 text-purple-600 wiggle" style={{
+                                        textShadow: '2px 2px 0px rgba(147, 51, 234, 0.3)'
+                                    }}>🦸 Super Gear 🦸</h3>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {TOYS.map(toy => (
+                                            <button
+                                                key={toy.id}
+                                                onClick={() => playWithToy(toy)}
+                                                disabled={isPlayingWithToy || isSleeping || energy < 15}
+                                                className={`cartoon-button bg-gradient-to-br ${toy.color} text-white font-bold py-5 rounded-xl border-4 border-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                style={{
+                                                    boxShadow: '0 4px 0 rgba(0,0,0,0.2), 0 6px 15px rgba(0,0,0,0.15)'
+                                                }}
+                                            >
+                                                <div className="text-4xl">{toy.emoji}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Humans Section */}
+                                <div className="mt-6">
+                                    <h3 className="text-2xl font-black text-center mb-4 text-purple-600 wiggle" style={{
+                                        textShadow: '2px 2px 0px rgba(147, 51, 234, 0.3)'
+                                    }}>🦸 Sidekicks 🦸</h3>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {HUMANS.map(human => (
+                                            <button
+                                                key={human.id}
+                                                onClick={() => addHuman(human)}
+                                                disabled={isSleeping}
+                                                className={`cartoon-button bg-gradient-to-br ${human.color} text-white font-bold py-5 rounded-xl border-4 border-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                style={{
+                                                    boxShadow: '0 4px 0 rgba(0,0,0,0.2), 0 6px 15px rgba(0,0,0,0.15)'
+                                                }}
+                                            >
+                                                <div className="text-4xl mb-1">{human.emoji}</div>
+                                                <div className="text-xs font-black drop-shadow">{human.name}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-center text-sm text-gray-600 mt-3 font-bold">
+                                        Click to add • Drag to move • Double-click to remove
+                                    </p>
+                                </div>
+
+                                {/* Tip */}
+                                <div className="mt-6 text-center text-gray-600 font-medium">
+                                    💡 Click on your Super Pet to give them love!
+                                </div>
+
+                                {/* Mini-Games Section */}
+                                <div className="mt-6">
+                                    <h3 className="text-2xl font-black text-center mb-4 text-purple-600 wiggle" style={{
+                                        textShadow: '2px 2px 0px rgba(147, 51, 234, 0.3)'
+                                    }}>🎮 Super Mini-Games 🎮</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <button
+                                            onClick={startCatchGame}
+                                            disabled={currentGame !== null || isSleeping}
+                                            className="cartoon-button bg-gradient-to-br from-green-400 to-teal-500 text-white font-black text-xl py-6 rounded-2xl border-4 border-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            style={{
+                                                boxShadow: '0 6px 0 rgba(22, 163, 74, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                            }}
+                                        >
+                                            🍎 Catch Game
+                                        </button>
+                                        <button
+                                            onClick={startMemoryGame}
+                                            disabled={currentGame !== null || isSleeping}
+                                            className="cartoon-button bg-gradient-to-br from-violet-400 to-fuchsia-500 text-white font-black text-xl py-6 rounded-2xl border-4 border-violet-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            style={{
+                                                boxShadow: '0 6px 0 rgba(124, 58, 237, 1), 0 8px 20px rgba(0,0,0,0.2)'
+                                            }}
+                                        >
+                                            🧠 Memory Game
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Game Overlays */}
+                        {currentGame === 'catch' && (
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                                <div className="bg-white rounded-3xl p-8 max-w-md w-full relative border-8 border-green-400" style={{
+                                    boxShadow: '0 10px 0 rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.3)'
+                                }}>
+                                    <div className="text-center mb-4">
+                                        <h3 className="text-4xl font-black text-purple-600 wiggle" style={{
+                                            textShadow: '3px 3px 0px rgba(147, 51, 234, 0.3)'
+                                        }}>Catch the Fruit! 🍎</h3>
+                                        <p className="text-2xl font-black mt-2 text-green-600">Score: {score}</p>
+                                    </div>
+                                    <div className="relative bg-gradient-to-b from-sky-200 to-green-200 rounded-2xl h-80 overflow-hidden border-4 border-green-500">
+                                        {/* Sky decorations */}
+                                        <div className="absolute top-4 left-4 text-3xl opacity-50">☁️</div>
+                                        <div className="absolute top-8 right-8 text-3xl opacity-50">☁️</div>
+                                        <div className="absolute top-16 left-20 text-2xl opacity-40">☁️</div>
+                                        <div className="absolute top-2 right-16 text-4xl animate-pulse">☀️</div>
+                                        
+                                        {/* Falling fruits */}
+                                        {catchItems.map(item => (
+                                            <div
+                                                key={item.id}
+                                                onClick={() => catchItem(item.id)}
+                                                className="absolute cursor-pointer cartoon-button"
+                                                style={{
+                                                    left: `${item.x}px`,
+                                                    top: `${item.y}px`
+                                                }}
+                                            >
+                                                <div className="text-5xl relative" style={{
+                                                    filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))',
+                                                    animation: 'wiggle 0.5s ease-in-out infinite'
+                                                }}>
+                                                    {item.emoji}
+                                                </div>
+                                            </div>
+                                        ))}
+                                        
+                                        {/* Ground/grass */}
+                                        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-green-600 to-green-400 border-t-4 border-green-700">
+                                            {/* Grass blades decoration */}
+                                            <div className="absolute bottom-0 left-0 right-0 flex justify-around">
+                                                <div className="text-3xl">🌱</div>
+                                                <div className="text-3xl">🌿</div>
+                                                <div className="text-3xl">🌱</div>
+                                                <div className="text-3xl">🌿</div>
+                                                <div className="text-3xl">🌱</div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Superhero pet with basket */}
+                                        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 wiggle">
+                                            <div className="relative">
+                                                {/* Basket */}
+                                                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-5xl">🧺</div>
+                                                {/* Pet */}
+                                                <div className="text-7xl" style={{
+                                                    filter: 'drop-shadow(0 6px 8px rgba(0,0,0,0.4))'
+                                                }}>
+                                                    {selectedPet.emoji}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentGame === 'memory' && (
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                                <div className="bg-white rounded-3xl p-8 max-w-md w-full border-8 border-purple-400" style={{
+                                    boxShadow: '0 10px 0 rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.3)'
+                                }}>
+                                    <div className="text-center mb-4">
+                                        <h3 className="text-4xl font-black text-purple-600 wiggle" style={{
+                                            textShadow: '3px 3px 0px rgba(147, 51, 234, 0.3)'
+                                        }}>Memory Match! 🧠</h3>
+                                        <p className="text-2xl font-black mt-2 text-purple-600">Score: {score}</p>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {memoryCards.map(card => (
+                                            <button
+                                                key={card.id}
+                                                onClick={() => flipCard(card.id)}
+                                                className={`cartoon-button aspect-square rounded-xl text-5xl font-bold border-4 ${
+                                                    flippedCards.includes(card.id) || matchedCards.includes(card.id)
+                                                        ? 'bg-white border-yellow-400 shadow-inner'
+                                                        : 'bg-gradient-to-br from-purple-400 to-pink-500 border-purple-600'
+                                                }`}
+                                                style={{
+                                                    boxShadow: '0 4px 0 rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.15)'
+                                                }}
+                                            >
+                                                {(flippedCards.includes(card.id) || matchedCards.includes(card.id)) ? card.emoji : '?'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SuperPets />);
+    </script>
+</body>
+</html>
